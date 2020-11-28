@@ -9,6 +9,18 @@ import { useAuth0 } from "@auth0/auth0-react";
 export default function Home({ allPostsData }) {
   const auth = useAuth0();
 
+  const makeRequestSilently = () => {
+    auth.getAccessTokenSilently().then((token) => {
+      console.log(`making request with token ${token}`);
+    });
+  };
+
+  const makeRequestWithPopup = () => {
+    auth.getAccessTokenWithPopup().then((token) => {
+      console.log(`making request with token ${token}`);
+    });
+  };
+
   if (auth.isLoading) {
     return <button onClick={auth.loginWithRedirect}>Log in</button>;
   } else if (auth.error) {
@@ -20,39 +32,11 @@ export default function Home({ allPostsData }) {
       <div>
         main content
         <button onClick={auth.logout}>log out</button>
+        <button onClick={makeRequestSilently}>make request silently</button>
+        <button onClick={makeRequestWithPopup}>make request with popup</button>
       </div>
     );
   }
-  return (
-    <Layout home>
-      <Head>
-        <title>{siteTitle}</title>
-      </Head>
-      <section className={utilStyles.headingMd}>
-        <p>[Your Self Introduction]</p>
-        <p>
-          (This is a sample website - you’ll be building a site like this in{" "}
-          <a href="https://nextjs.org/learn">our Next.js tutorial</a>.)
-        </p>
-      </section>
-      <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
-        <h2 className={utilStyles.headingLg}>Blog</h2>
-        <ul className={utilStyles.list}>
-          {allPostsData.map(({ id, date, title }) => (
-            <li className={utilStyles.listItem} key={id}>
-              <Link href={`/posts/${id}`}>
-                <a>{title}</a>
-              </Link>
-              <br />
-              <small className={utilStyles.lightText}>
-                <Date dateString={date} />
-              </small>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </Layout>
-  );
 }
 
 export async function getStaticProps() {
